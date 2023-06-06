@@ -73,8 +73,11 @@ c)  More babys were born in 2021.
     print(paste("There were", sum21, "babys born in 2021 and", sum22, "babys born in 2022."))
 ```
   
-d)  Add a new column `year` to both datasets which holds the correct
-    year for each.
+d)  
+```{r}
+  data22 <- data22 %>% mutate(year = 2022)
+  data21 <- data21 %>% mutate(year = 2021)
+```
     
 
 e)  Combine both datasets into one using `bind_rows()`.
