@@ -114,6 +114,18 @@ column_means <- apply(tax_data[, -1], 2, mean)
 column_means
 ```
 
+b)  The `rapply` function does a recursive apply. This means that the given 
+function is applied to every substructure of the object the `rapply` function is 
+called on. In the following example, we apply the square-function to an object 
+that contains another object. The result is an object of the same structure in which
+every number is squared.
+
+```{r}
+my_list <- list(a = 2, b = list(c = 5))
+
+result <- rapply(my_list, function(x) x^2)
+print(result)
+```
 
 ## Final Note
 
