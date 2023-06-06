@@ -30,11 +30,12 @@ a)  Create a new repository on GitHub in your account named
     `exeRcise-sheet-3`. Make sure you create a **public repository** so
     we are able to see it for grading. Add the link to the repository
     below: https://github.com/yndolg/exeRcise-sheets-3
-b)  ```{r}
+b)  
+```{}
     git remote add origin git@github.com:yndolg/exeRcise-sheets-3.git
     git branch -M main
     git push -u origin main
-    ```
+```
 c)  Regularly push your latest changes to GitHub again and especially do
     so when you are finished with this sheet.
 
@@ -49,11 +50,21 @@ Link: <https://opendata.muenchen.de/dataset/vornamen-von-neugeborenen>
 a)  Download the data for both years and track it in git. For small
     datasets like these adding them to git is not a problem.
 
-b)  Load the data for both years into R. Check the type of the count
-    variable ("Anzahl") and look into the data to determine why it is
-    not numeric? Fix the problem in an appropriate manner, it is OK if
-    some of the counts are inaccurate because of this. Explain your
-    solution and the repercussions.
+b) The problem is that for counts lower or equal to 4, the data set only contains
+    "4 oder weniger". To solve this issue, we've set all of these values to 2,
+    as this might roughly preserve the total number of babies. This is an
+    estimate for the average count over these values. Of course, they are likely
+    not uniformly distributed, but we don't have much information to take a 
+    more informed guess.
+
+```{r}
+    library(readr)
+    library(dplyr)
+    data22 <- read_csv("vornamen_2022.csv")
+    data21 <- read_csv("vornamen_2021.csv")
+    data22 <- data22 %>% mutate(AnzahlNum = parse_number(ifelse(Anzahl == "4 oder weniger", "2", Anzahl)))
+    data21 <- data21 %>% mutate(AnzahlNum = parse_number(ifelse(Anzahl == "4 oder weniger", "2", Anzahl)))
+```
 
 c)  Calculate the total number of babies born in Munich in 2022
     and 2021. Which year had the bigger baby-boom?
