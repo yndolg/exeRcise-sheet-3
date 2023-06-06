@@ -98,26 +98,22 @@ kable(data_full %>% group_by(Vorname) %>% summarise(AnzahlTotal = sum(AnzahlNum)
 For this task: Specifically use ChatGPT to solve the task and submit
 your prompts in addition to the solution
 
-a)  The code below does not work because the wrong apply function has
-    been used. Find out which apply function would be correct and why it
-    did not work. Correct the code. Also calculate the rowwise means.
+a) The 'lapply' function is not the appropiate function to use here. 'lapply'
+stands for list apply and applies a function to each element of the list. However,
+in this case, we need to calculate the column-wise means of a data frame, which requires
+'apply' not 'lapply'. Here is the corrected code:
 
-###Create a sample data frame
-
-tax_data \<- data.frame( Name = c("Munich GmbH", "ABC Inc.", "Backpacks
+```{r}
+tax_data <- data.frame( Name = c("Munich GmbH", "ABC Inc.", "Backpacks
 1980", "Bavarian Circus"), Tax_2019 = c(5000, 4000, 6000, 3500),
 Tax_2020 = c(4800, 4200, 5800, 3700), Tax_2021 = c(5200, 3800, 5900,
-3400) )
+3400))
 
-###Calculate column-wise means
-
-column_means \<- lapply(tax_data\[, -1\], 2, mean)
+column_means <- apply(tax_data[, -1], 2, mean)
 
 column_means
+```
 
-b)  Using ChatGPT try to understand what the rapply() function does.
-    Create an easy example with mock data where the function is used and
-    explain it in your words.
 
 ## Final Note
 
