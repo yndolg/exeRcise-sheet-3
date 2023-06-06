@@ -66,11 +66,16 @@ b) The problem is that for counts lower or equal to 4, the data set only contain
     data21 <- data21 %>% mutate(AnzahlNum = parse_number(ifelse(Anzahl == "4 oder weniger", "2", Anzahl)))
 ```
 
-c)  Calculate the total number of babies born in Munich in 2022
-    and 2021. Which year had the bigger baby-boom?
-
+c)  More babys were born in 2021.
+```{r}
+    sum22 <- sum(data22$AnzahlNum)
+    sum21 <- sum(data21$AnzahlNum)
+    print(paste("There were", sum21, "babys born in 2021 and", sum22, "babys born in 2022."))
+```
+  
 d)  Add a new column `year` to both datasets which holds the correct
     year for each.
+    
 
 e)  Combine both datasets into one using `bind_rows()`.
 
