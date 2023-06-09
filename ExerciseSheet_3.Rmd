@@ -1,8 +1,11 @@
 ---
-title: "Exercise #3"
-subtitle: "Fortgeschrittene Statistische Software für NF - SS 2022/23"
-author: "Marius Jacobs (12573264), Niels Glodny (12568548), ..."
+title: 'Exercise #3'
+author: "Marius Jacobs (12573264), Niels Glodny (12568548)"
 date: "`r Sys.Date()`"
+output:
+  html_document:
+    df_print: paged
+subtitle: "Fortgeschrittene Statistische Software für NF - SS 2022/23"
 ---
 
 ## Exercise 1: Initializing git (4 Points)
@@ -29,81 +32,66 @@ For this task you will upload your solution to GitHub.
 a)  Create a new repository on GitHub in your account named
     `exeRcise-sheet-3`. Make sure you create a **public repository** so
     we are able to see it for grading. Add the link to the repository
-    below: https://github.com/yndolg/exeRcise-sheets-3
+    below: https://github.com/yndolg/exeRcise-sheet-3
 b)  
 ```{}
-    git remote add origin git@github.com:yndolg/exeRcise-sheets-3.git
+    git remote add origin git@github.com:yndolg/exeRcise-sheet-3.git
     git branch -M main
     git push -u origin main
 ```
-c)  Regularly push your latest changes to GitHub again and especially do
-    so when you are finished with this sheet.
 
 ## Exercise 3: Baby-Names in Munich (4.5 Points)
 
-Download the latest open datasets on given names ("Vornamen") from the
-open data repository of the city of Munich for the years `2022` and
-`2021`.
-
-Link: <https://opendata.muenchen.de/dataset/vornamen-von-neugeborenen>
-
-a)  Download the data for both years and track it in git. For small
-    datasets like these adding them to git is not a problem.
-
 b) The problem is that for counts lower or equal to 4, the data set only contains
     "4 oder weniger". To solve this issue, we've set all of these values to 2,
-    as this might roughly preserve the total number of babies. This is an
-    estimate for the average count over these values. Of course, they are likely
-    not uniformly distributed, but we don't have much information to take a 
-    more informed guess.
+    as this might roughly preserve the total number of babies (which we need in exercise c). The value 2 is an estimate for the average count over all Names with a count of "4 oder weniger". Of course, they are likely not uniformly distributed – we would expect the average to be somewhat lower than 2 – but we don't have much information to take a more informed guess.
 
-```{r}
+    ```{r, warnings = FALSE, message = FALSE}
     library(readr)
     library(dplyr)
     data22 <- read_csv("vornamen_2022.csv")
     data21 <- read_csv("vornamen_2021.csv")
-    data22 <- data22 %>% mutate(AnzahlNum = parse_number(ifelse(Anzahl == "4 oder weniger", "2", Anzahl)))
-    data21 <- data21 %>% mutate(AnzahlNum = parse_number(ifelse(Anzahl == "4 oder weniger", "2", Anzahl)))
+    data22 <- data22 %>% 
+      mutate(AnzahlNum = parse_number(ifelse(Anzahl == "4 oder weniger", "2", Anzahl)))
+    data21 <- data21 %>% 
+      mutate(AnzahlNum = parse_number(ifelse(Anzahl == "4 oder weniger", "2", Anzahl)))
 ```
 
-c)  More babys were born in 2021.
-```{r}
+c)  More babies were born in 2021.
+    ```{r}
     sum22 <- sum(data22$AnzahlNum)
     sum21 <- sum(data21$AnzahlNum)
-    print(paste("There were", sum21, "babys born in 2021 and", sum22, "babys born in 2022."))
+    print(paste("There were", sum21, 
+                "babys born in 2021 and", sum22, "babys born in 2022."))
 ```
   
 d)  
-```{r}
+    ```{r}
   data22 <- data22 %>% mutate(year = 2022)
   data21 <- data21 %>% mutate(year = 2021)
 ```
     
 
 e)  
-```{r}
+    ```{r}
  data_full = bind_rows(data22, data21)
 ```
 
-f)  Combine the counts for same names to determine the most popular
-    names across both years. Print out the top 10 names in a nicely
-    formatted table for both years. Include a table caption.
-```{r}
+f)  
+    ```{r}
 library(knitr)
 kable(data_full %>% group_by(Vorname) %>% summarise(AnzahlTotal = sum(AnzahlNum)) %>% arrange(-AnzahlTotal) %>% head(10), caption="Most common forenames in Munich in the years 2021 and 2022")
 ```
 
 ## Exercise 4: Chat GPT + apply (3 points)
 
-For this task: Specifically use ChatGPT to solve the task and submit
-your prompts in addition to the solution
 
 a) The 'lapply' function is not the appropiate function to use here. 'lapply'
 stands for list apply and applies a function to each element of the list. However,
 in this case, we need to calculate the column-wise means of a data frame, which requires
 'apply' not 'lapply'. Here is the corrected code:
 
-```{r}
+    ```{r}
 tax_data <- data.frame( Name = c("Munich GmbH", "ABC Inc.", "Backpacks
 1980", "Bavarian Circus"), Tax_2019 = c(5000, 4000, 6000, 3500),
 Tax_2020 = c(4800, 4200, 5800, 3700), Tax_2021 = c(5200, 3800, 5900,
@@ -113,6 +101,14 @@ column_means <- apply(tax_data[, -1], 2, mean)
 
 column_means
 ```
+    We used the prompt "This R code supposedly uses the wrong apply function. Please explain why it's wrong and correct it." together with the given code afterwards. We then asked "How would I calculate the row-wise means?" as a follow-up questions and got an explanation, that we'd need to set the second parameter of the apply function to 1. Furthermore, we got the following working code:
+    ```{r}
+    # Calculate row-wise means using apply
+row_means <- apply(tax_data[, -1], 1, mean)
+row_means
+    ```
+    
+    A quick check with a calculator tells us that the answers we got seem to be correct.
 
 b)  The `rapply` function does a recursive apply. This means that the given 
 function is applied to every substructure of the object the `rapply` function is 
@@ -120,14 +116,10 @@ called on. In the following example, we apply the square-function to an object
 that contains another object. The result is an object of the same structure in which
 every number is squared.
 
-```{r}
+    ```{r}
 my_list <- list(a = 2, b = list(c = 5))
 
 result <- rapply(my_list, function(x) x^2)
 print(result)
 ```
-
-## Final Note
-
-Make sure to push all your commits and changes to GitHub before
-submittining the exercise sheet.
+    We used the prompt "What is the rapply function used for?" (as it was clear from the previous messages that we're talking about the R programming language). This gave us an explanation together with an example. The example contained some unnecessary details (e.g. one more level of nesting) which we've removed here to give a more meaningful one.
